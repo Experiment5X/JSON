@@ -2,18 +2,39 @@
 #define JSON_H
 
 #include <iostream>
+#include <map>
 
 using std::string;
+using std::map;
 
 namespace JSON
 {
-    class JSONStructure
+    enum class ValueType
+    {
+        String,
+        Number,
+        Object,
+        Array,
+        True,
+        False,
+        Null
+    };
+
+    template <class T>
+    class Value
+    {
+        ValueType type;
+        T value;
+    };
+
+    class JSON
     {
         public:
-            JSONStructure(string &jsonText);
-            ~JSONStructure();
+            JSON(string &jsonText);
+            ~JSON();
         private:
             string &jsonText;
+            map<string, Value<string>> head;
     };
 }
 

@@ -3,13 +3,13 @@
 using namespace std;
 using namespace JSON;
 
-JSON::JSONStructure::JSONStructure(string &jsonText) :
+JSON::JSON::JSON(string &jsonText) :
     jsonText(jsonText)
 {
 
 }
 
-JSON::JSONStructure::~JSONStructure()
+JSON::JSON::~JSON()
 {
 
 }
