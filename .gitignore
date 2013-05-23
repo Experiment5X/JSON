@@ -1,0 +1,8 @@
+*.depend
+*.layout
+*.mode1v3
+*.pbxuser
+
+obj/
+bin/
+build/
