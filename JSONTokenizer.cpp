@@ -3,7 +3,7 @@
 using namespace JSON;
 
 Tokenizer::Tokenizer(string jsonText) :
-    jsonText(jsonText), currentIndex(0)
+    jsonText(jsonText)
 {
 
 }
