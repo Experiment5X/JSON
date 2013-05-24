@@ -2,7 +2,7 @@
 
 using namespace JSON;
 
-Tokenizer::Tokenizer(string jsonText) :
+Tokenizer::Tokenizer(wstring jsonText) :
     jsonText(jsonText)
 {
 
@@ -15,7 +15,7 @@ Tokenizer::~Tokenizer()
 
 Token Tokenizer::GetNextToken()
 {
-    Token toReturn = { TokenType::End_of_File, "" };
+    Token toReturn = { TokenType::End_of_File, L"" };
 
     // loop while there's whitespace, we can ignore that
     while ((unsigned int)currentIndex < jsonText.size() && isspace(jsonText.at(currentIndex)))

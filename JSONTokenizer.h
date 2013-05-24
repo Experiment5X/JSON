@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include "JSONException.h"
 
-using std::string;
+using std::wstring;
 
 namespace JSON
 {
@@ -26,19 +26,19 @@ namespace JSON
     struct Token
     {
         TokenType tokenType;
-        string value;
+        wstring value;
     };
 
     class Tokenizer
     {
         public:
-            Tokenizer(string jsonText);
+            Tokenizer(wstring jsonText);
             ~Tokenizer();
 
             Token GetNextToken();
 
         private:
-            string jsonText;
+            wstring jsonText;
             int currentIndex = 0;
 
             bool IsNumberCharacter(const char c);
