@@ -3,9 +3,17 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
+#include <sstream>
 
-using std::string;
+#include "JSONException.h"
+#include "JSONTokenizer.h"
+
+using std::wstring;
 using std::map;
+using std::vector;
+using std::wstringstream;
+using std::string;
 
 namespace JSON
 {
@@ -15,26 +23,36 @@ namespace JSON
         Number,
         Object,
         Array,
-        True,
-        False,
+        Boolean,
         Null
     };
 
-    template <class T>
-    class Value
+    struct Value
     {
         ValueType type;
-        T value;
+
+        union value
+        {
+            wstring str;
+            double num;
+            map<string, Value> obj;
+            vector<Value> arr;
+            bool b;
+        };
     };
 
     class JSON
     {
         public:
-            JSON(string &jsonText);
+            JSON(wstring jsonText);
+            JSON(string jsonText);
             ~JSON();
-        private:
-            string &jsonText;
-            map<string, Value<string>> head;
+        //private:
+            wstring jsonText;
+            map<wstring, Value> headObject;
+
+            void Parse();
+            wstring ParseString(wstring s);
     };
 }
 
