@@ -27,23 +27,17 @@ namespace JSON
         Null
     };
 
-    struct Value;
-
-    // really this should be a union, but i was getting a bunch of compile
-    // errors and don't feel like looking into it right now
-    struct ValueFields
+    struct Value
     {
+        ValueType type;
+
+        // really this should be a union, but i was getting a bunch of compile
+        // errors and don't feel like looking into it right now
         wstring str;
         double num;
         map<wstring, Value> obj;
         vector<Value> arr;
         bool b;
-    };
-
-    struct Value
-    {
-        ValueType type;
-        ValueFields value;
     };
 
     class JSON
@@ -52,9 +46,10 @@ namespace JSON
             JSON(wstring jsonText);
             JSON(string jsonText);
             ~JSON();
-        //private:
-            wstring jsonText;
+
             map<wstring, Value> headObject;
+        private:
+            wstring jsonText;
 
             void Parse(Tokenizer &tokenizer, map<wstring, Value> &object, bool skipFirstCheck = false);
             Value ParseValue(Token valueToken, Tokenizer &tokenizer);

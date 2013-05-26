@@ -65,19 +65,19 @@ Value JSON::JSON::ParseValue(Token valueToken, Tokenizer &tokenizer)
     if (valueToken.tokenType == TokenType::String)
     {
         toReturn.type = ValueType::String;
-        toReturn.value.str = ParseString(valueToken.value);
+        toReturn.str = ParseString(valueToken.value);
     }
     else if (valueToken.tokenType == TokenType::Symbol)
     {
         if (valueToken.value == L"true")
         {
             toReturn.type = ValueType::Boolean;
-            toReturn.value.b = true;
+            toReturn.b = true;
         }
         else if (valueToken.value == L"false")
         {
             toReturn.type = ValueType::Boolean;
-            toReturn.value.b = true;
+            toReturn.b = true;
         }
         else if (valueToken.value == L"null")
         {
@@ -86,17 +86,17 @@ Value JSON::JSON::ParseValue(Token valueToken, Tokenizer &tokenizer)
         else
         {
             toReturn.type = ValueType::Number;
-            toReturn.value.num = ParseNumber(valueToken.value);
+            toReturn.num = ParseNumber(valueToken.value);
         }
     }
     else if (valueToken.tokenType == TokenType::L_CurlyBrace)
     {
         toReturn.type = ValueType::Object;
         map<wstring, Value> object;
-        toReturn.value.obj = object;
+        toReturn.obj = object;
 
         // parse the object structure, but skip the check for { because it's already been done
-        Parse(tokenizer, toReturn.value.obj, true);
+        Parse(tokenizer, toReturn.obj, true);
     }
     else if (valueToken.tokenType == TokenType::L_Bracket)
     {
@@ -107,7 +107,7 @@ Value JSON::JSON::ParseValue(Token valueToken, Tokenizer &tokenizer)
         {
             // parse the value in the array
             t = tokenizer.GetNextToken();
-            toReturn.value.arr.push_back(ParseValue(t, tokenizer));
+            toReturn.arr.push_back(ParseValue(t, tokenizer));
 
             t = tokenizer.GetNextToken();
             if (t.tokenType != TokenType::Comma && t.tokenType != TokenType::R_Bracket)
