@@ -9,7 +9,6 @@ using std::wstring;
 
 namespace JSON
 {
-
     enum class TokenType
     {
         L_CurlyBrace,
@@ -19,7 +18,7 @@ namespace JSON
         String,
         Colon,
         Comma,
-        Number,
+        Symbol,
         End_of_File
     };
 
@@ -40,8 +39,6 @@ namespace JSON
         private:
             wstring jsonText;
             int currentIndex = 0;
-
-            bool IsNumberCharacter(const char c);
     };
 }
 

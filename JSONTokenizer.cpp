@@ -32,16 +32,16 @@ Token Tokenizer::GetNextToken()
     switch (jsonText.at(currentIndex))
     {
         case '{':
-            toReturn.tokenType = TokenType::R_CurlyBrace;
-            goto Return;
-        case '}':
             toReturn.tokenType = TokenType::L_CurlyBrace;
             goto Return;
+        case '}':
+            toReturn.tokenType = TokenType::R_CurlyBrace;
+            goto Return;
         case '[':
-            toReturn.tokenType = TokenType::R_Bracket;
+            toReturn.tokenType = TokenType::L_Bracket;
             goto Return;
         case ']':
-            toReturn.tokenType = TokenType::L_Bracket;
+            toReturn.tokenType = TokenType::R_Bracket;
             goto Return;
         case ':':
             toReturn.tokenType = TokenType::Colon;
@@ -59,36 +59,24 @@ Token Tokenizer::GetNextToken()
                 toReturn.value += '"';
 
             goto Return;
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        case '-':
-            toReturn.tokenType = TokenType::Number;
-
-            // This isn't going to check if it's a valid number, that will
-            // be done later. Right now it will say this: -e.2123.3 is valid
-            while ((unsigned int)currentIndex < jsonText.size() && IsNumberCharacter(jsonText.at(++currentIndex)))
-                toReturn.value += jsonText.at(currentIndex);
-
-            goto Return;
 
         default:
-            throw Exception("Invalid token.");
+            toReturn.tokenType = TokenType::Symbol;
+            toReturn.value = L"";
+
+            while (isalpha(jsonText.at(currentIndex)) || isdigit(jsonText.at(currentIndex)) || jsonText.at(currentIndex) == '-' || jsonText.at(currentIndex) == '+')
+            {
+                toReturn.value += jsonText.at(currentIndex);
+                currentIndex++;
+            }
+
+            if (toReturn.value == L"")
+                throw Exception("Invalid token.");
+
+            return toReturn;
 
         Return:
             currentIndex++;
             return toReturn;
     }
-}
-
-bool Tokenizer::IsNumberCharacter(const char c)
-{
-    return isdigit(c) || c == 'e' || c == 'E' || c == '+' || c == '-';
 }
