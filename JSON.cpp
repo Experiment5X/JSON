@@ -102,10 +102,11 @@ Value JSON::JSON::ParseValue(Token valueToken, Tokenizer &tokenizer)
     {
         toReturn.type = ValueType::Array;
 
-        Token t = tokenizer.GetNextToken();
+        Token t = { TokenType::Symbol, L"" };
         while (t.tokenType != TokenType::R_Bracket)
         {
             // parse the value in the array
+            t = tokenizer.GetNextToken();
             toReturn.value.arr.push_back(ParseValue(t, tokenizer));
 
             t = tokenizer.GetNextToken();
