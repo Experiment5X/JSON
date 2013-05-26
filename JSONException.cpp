@@ -10,5 +10,5 @@ JSON::Exception::Exception(const string &message) :
 
 const char* JSON::Exception::what() const throw()
 {
-    return string("JSON: " + message).c_str();
+    return message.c_str();
 }
