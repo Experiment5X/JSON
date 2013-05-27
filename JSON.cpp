@@ -194,3 +194,102 @@ double JSON::JSON::ParseNumber(wstring s)
         throw Exception("Invalid syntax for value type Number.");
     return toReturn;
 }
+
+string JSON::JSON::ToString()
+{
+    wstring wJson = ToWString();
+    string toReturn(wJson.begin(), wJson.end());
+    return toReturn;
+}
+
+wstring JSON::JSON::ToWString()
+{
+    wstring toReturn = L"";
+    ObjectToWString(headObject, toReturn, 0);
+    return toReturn;
+}
+
+void JSON::JSON::ObjectToWString(map<wstring, Value> &obj, wstring &outStr, int tabCount)
+{
+    outStr += L"{ ";
+    if (tabCount != 0 && obj.size() > 1)
+    {
+        outStr += L"\r\n";
+    }
+
+    for (pair<wstring, Value> p : obj)
+    {
+        if (obj.size() > 1)
+            AddTabs(outStr, tabCount);
+
+        // string
+        outStr += '"';
+        outStr += p.first;
+        outStr += '"';
+
+        outStr += L": ";
+
+        ValueToWString(p.second, outStr, tabCount + 1);
+
+        outStr += L", \r\n";
+    }
+
+    // there will be an extra ", \r\n" every time
+    outStr.erase(outStr.end() - 4, outStr.end());
+
+    if (tabCount == 0 || obj.size() <= 1)
+    {
+        outStr += '}';
+    }
+    else
+    {
+        outStr += L"\r\n";
+        AddTabs(outStr, tabCount - 1);
+        outStr += '}';
+    }
+}
+
+void JSON::JSON::ValueToWString(Value &value, wstring &outStr, int tabCount)
+{
+    switch (value.type)
+    {
+        case ValueType::String:
+            outStr += '"';
+            outStr += value.str;
+            outStr += '"';
+            break;
+        case ValueType::Number:
+        {
+            wstringstream ss;
+            ss << value.num;
+            outStr += ss.str();
+            break;
+        }
+        case ValueType::Object:
+            ObjectToWString(value.obj, outStr, tabCount);
+            break;
+        case ValueType::Array:
+            outStr += L"[ ";
+            for (Value v : value.arr)
+            {
+                ValueToWString(v, outStr, tabCount + 1);
+                outStr += L", \r\n";
+                AddTabs(outStr, tabCount + 1);
+            }
+            outStr.erase(outStr.end() - 2, outStr.end());
+            outStr += L" ]";
+            break;
+        case ValueType::Boolean:
+            outStr += (value.b) ? L"true" : L"false";
+            break;
+        case ValueType::Null:
+            outStr += L"Null";
+            break;
+    }
+}
+
+void JSON::JSON::AddTabs(wstring &outStr, int tabCount)
+{
+    for (int i = 0; i < tabCount; i++)
+        outStr += L"\t";
+}

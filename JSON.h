@@ -43,11 +43,14 @@ namespace JSON
     class JSON
     {
         public:
+            map<wstring, Value> headObject;
+
             JSON(wstring jsonText);
             JSON(string jsonText);
             ~JSON();
 
-            map<wstring, Value> headObject;
+            string ToString();
+            wstring ToWString();
         private:
             wstring jsonText;
 
@@ -55,6 +58,11 @@ namespace JSON
             Value ParseValue(Token valueToken, Tokenizer &tokenizer);
             wstring ParseString(wstring s);
             double ParseNumber(wstring s);
+
+            void ObjectToWString(map<wstring, Value> &obj, wstring &outStr, int tabCount);
+            void ValueToWString(Value &value, wstring &outStr, int tabCount);
+
+            void AddTabs(wstring &outStr, int tabCount);
     };
 }
 
