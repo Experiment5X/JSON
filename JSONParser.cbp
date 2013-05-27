@@ -39,7 +39,6 @@
 		<Unit filename="JSONTokenizer.cpp" />
 		<Unit filename="JSONTokenizer.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="src/JSON.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

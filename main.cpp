@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 #include "JSON.h"
 
@@ -50,6 +51,91 @@ int main()
         wcout << v.obj[L"commit"].obj[L"author"].obj[L"name"].str << L": " << endl;
         wcout << v.obj[L"commit"].obj[L"message"].str << endl << endl;
     }
+
+    /* An example output for this section:
+
+        Adam Spindler:
+        Changed to support unicode JSON
+
+        Adam Spindler:
+        Removed unnecessary code
+
+        Adam Spindler:
+        Changed class name to JSON
+
+        Adam Spindler:
+        Added project to repo
+
+        Adam Spindler:
+        Added readme
+
+    */
+
+
+    // It is also possible to create/edit JSON structures. To create a
+    // a new one, just go ahead and pass "{ }" in through the JSON::JSON
+    // constructor.
+    JSON::JSON newJson("{ }");
+
+    // Now, we can just start adding to it. We'll create a JSON structure
+    // that will hold a person's information.
+    for (int i = 0; i < 3; i++)
+    {
+        // This personInfo is an object. In this library, objects
+        // are maps with of type wstring and JSON::Value
+        map<wstring, JSON::Value> personInfo;
+
+        // The strings in the JSON structure must be wstrings
+        wstring name;
+        int age = 0;
+
+        wcout << L"Name: ";
+        wcin >> name;
+        personInfo[L"Name"].type = JSON::ValueType::String;
+        personInfo[L"Name"].str = name;
+
+        wcout << L"Age: ";
+        wcin >> age;
+        personInfo[L"Age"].type = JSON::ValueType::Number;
+        // all numbers must be doubles
+        personInfo[L"Age"].num = (double)age;
+
+        wstringstream wss;
+        wss << i;
+        wstring personId = wss.str();
+
+        // Create a value, would look like this in JSON:
+        // { "Name" : "NAME_USER_ENTERED", "Age" : AGE_USER_ENTERED }
+        JSON::Value newPerson;
+        newPerson.type = JSON::ValueType::Object;
+        newPerson.obj = personInfo;
+
+        // Add the value into the JSON structure
+        newJson.startValue.obj[personId] = newPerson;
+
+        wcout << endl;
+    }
+
+    // Print out the JSON structure that was created. Another version
+    // of this function exists, called ToString, which will return a
+    // std::string instead of a std::wstring
+    wcout << newJson.ToWString() << endl;
+
+    /* An example output for this section:
+
+        { "0": {
+            "Age": 17,
+            "Name": "Adam"
+        },
+        "1": {
+            "Age": 18,
+            "Name": "Jenna"
+        },
+        "2": {
+            "Age": 22,
+            "Name": "Tom"
+        }}
+    */
 
     return 0;
 }
