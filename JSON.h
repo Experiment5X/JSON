@@ -43,7 +43,7 @@ namespace JSON
     class JSON
     {
         public:
-            map<wstring, Value> headObject;
+            Value startValue;
 
             JSON(wstring jsonText);
             JSON(string jsonText);
@@ -54,7 +54,8 @@ namespace JSON
         private:
             wstring jsonText;
 
-            void Parse(Tokenizer &tokenizer, map<wstring, Value> &object, bool skipFirstCheck = false);
+            void Parse();
+            void ParseObject(Tokenizer &tokenizer, map<wstring, Value> &object);
             Value ParseValue(Token valueToken, Tokenizer &tokenizer);
             wstring ParseString(wstring s);
             double ParseNumber(wstring s);

@@ -6,15 +6,13 @@ using namespace JSON;
 JSON::JSON::JSON(wstring jsonText) :
     jsonText(jsonText)
 {
-    Tokenizer tokenizer(this->jsonText);
-    Parse(tokenizer, headObject);
+    Parse();
 }
 
 JSON::JSON::JSON(string jsonText)
 {
     this->jsonText = wstring(jsonText.begin(), jsonText.end());
-    Tokenizer tokenizer(this->jsonText);
-    Parse(tokenizer, headObject);
+    Parse();
 }
 
 JSON::JSON::~JSON()
@@ -22,26 +20,26 @@ JSON::JSON::~JSON()
 
 }
 
-void JSON::JSON::Parse(Tokenizer &tokenizer, map<wstring, Value> &object, bool skipFirstCheck)
+void JSON::JSON::Parse()
+{
+    Tokenizer tokenizer(jsonText);
+    startValue = ParseValue(tokenizer.GetNextToken(), tokenizer);
+}
+
+void JSON::JSON::ParseObject(Tokenizer &tokenizer, map<wstring, Value> &object)
 {
     Token t = { TokenType::Symbol, L"" };
-    // we only want to read the next token if we're going to check it
-    // the whole point of that bool passed in is to skip the read,
-    // since that token would have already been read in when called
-    // from the ParseValue function
-    if (!skipFirstCheck)
-    {
-        t = tokenizer.GetNextToken();
-        if (t.tokenType != TokenType::L_CurlyBrace)
-            throw Exception("Object must begin with '{' token.");
-    }
 
     // multiple pairs can exist in the same object, they're seperated with a comma
     // object -> { members } -> { pair, members }
     while (t.tokenType != TokenType::R_CurlyBrace)
     {
+        t = tokenizer.GetNextToken();
+        // this will only be true if the object is empty, so { }
+        if (t.tokenType == TokenType::R_CurlyBrace)
+            return;
         // pairs must look like this 'string : value'
-        if ((t = tokenizer.GetNextToken()).tokenType != TokenType::String)
+        else if (t.tokenType != TokenType::String)
             throw Exception("Pair must begin with string token.");
 
         wstring str = ParseString(t.value);
@@ -96,7 +94,7 @@ Value JSON::JSON::ParseValue(Token valueToken, Tokenizer &tokenizer)
         toReturn.obj = object;
 
         // parse the object structure, but skip the check for { because it's already been done
-        Parse(tokenizer, toReturn.obj, true);
+        ParseObject(tokenizer, toReturn.obj);
     }
     else if (valueToken.tokenType == TokenType::L_Bracket)
     {
@@ -107,6 +105,11 @@ Value JSON::JSON::ParseValue(Token valueToken, Tokenizer &tokenizer)
         {
             // parse the value in the array
             t = tokenizer.GetNextToken();
+
+            // this will only be true if the array is empty
+            if (t.tokenType == TokenType::R_Bracket)
+                return toReturn;
+
             toReturn.arr.push_back(ParseValue(t, tokenizer));
 
             t = tokenizer.GetNextToken();
@@ -205,7 +208,7 @@ string JSON::JSON::ToString()
 wstring JSON::JSON::ToWString()
 {
     wstring toReturn = L"";
-    ObjectToWString(headObject, toReturn, 0);
+    ValueToWString(startValue, toReturn, 0);
     return toReturn;
 }
 
@@ -234,8 +237,9 @@ void JSON::JSON::ObjectToWString(map<wstring, Value> &obj, wstring &outStr, int 
         outStr += L", \r\n";
     }
 
-    // there will be an extra ", \r\n" every time
-    outStr.erase(outStr.end() - 4, outStr.end());
+    // there will be an extra ", \r\n" every time, unless the object is empty
+    if (obj.size() != 0)
+        outStr.erase(outStr.end() - 4, outStr.end());
 
     if (tabCount == 0 || obj.size() <= 1)
     {
@@ -276,7 +280,8 @@ void JSON::JSON::ValueToWString(Value &value, wstring &outStr, int tabCount)
                 outStr += L", \r\n";
                 AddTabs(outStr, tabCount + 1);
             }
-            outStr.erase(outStr.end() - 2, outStr.end());
+            if (value.arr.size() != 0)
+                outStr.erase(outStr.end() - 2, outStr.end());
             outStr += L" ]";
             break;
         case ValueType::Boolean:

@@ -18,8 +18,13 @@ int main()
 
     JSON::JSON myJson(jsonText);
 
-   // wcout << myJson.headObject[L"web-app"].obj[L"servlet"].arr.at(0).obj[L"servlet-name"].str << endl;
-    cout << myJson.ToString() << endl;
+    cout << myJson.ToString();
+
+    for (JSON::Value v : myJson.startValue.arr)
+    {
+        wcout << v.obj[L"commit"].obj[L"author"].obj[L"name"].str << L": " << endl;
+        wcout << v.obj[L"commit"].obj[L"message"].str << endl << endl;
+    }
 
     return 0;
 }
